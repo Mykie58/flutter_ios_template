@@ -1,14 +1,19 @@
 workflows:
-  ios-simulator:
-    name: Build iOS simulator version
-    max_build_duration: 30
+  ios-create-folder:
+    name: Generate iOS folder
     environment:
       flutter: stable
       xcode: latest
     scripts:
-      - name: Flutter pub get
-        script: flutter pub get
-      - name: Build iOS for simulator
-        script: flutter build ios --simulator
-    artifacts:
-      - build/ios/iphonesimulator/**/*
+      - name: Init iOS
+        script: |
+          rm -rf ios
+          flutter create .
+      - name: Push iOS folder back to GitHub
+        script: |
+          git config --global user.email "codemagic@bot.com"
+          git config --global user.name "Codemagic Bot"
+          git remote set-url origin https://<TOKEN>@github.com/<TON_USER>/<TON_REPO>.git
+          git add ios/
+          git commit -m "Generated iOS folder from Codemagic"
+          git push origin HEAD
