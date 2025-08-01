@@ -2,6 +2,8 @@ workflows:
   ios-init:
     name: Init iOS Project on macOS
     environment:
+      groups:
+        - github_access
       flutter: stable
       xcode: latest
       vars:
