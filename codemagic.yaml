@@ -25,9 +25,9 @@ workflows:
         script: |
           flutter create .
 
-- name: Commit and push ios/
-  script: |
-    git add ios/
-    git commit -m "Regenerate ios folder via CI" || git commit --allow-empty -m "Force update to trigger push"
-    git push origin $GIT_BRANCH --verbose
+      - name: Commit and push ios/
+        script: |
+          git add ios/
+          git commit -m "Regenerate ios folder via CI" || git commit --allow-empty -m "Force update to trigger push"
+          git push origin $GIT_BRANCH --verbose
 
