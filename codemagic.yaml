@@ -1,33 +1,26 @@
 workflows:
   ios-init:
-    name: Init iOS Project on macOS
+    name: iOS Init (recreate ios folder)
     environment:
-      groups:
-        - github_access
       flutter: stable
       xcode: latest
       vars:
-        GIT_BRANCH: "main" # ou "master" selon ton cas
-
+        GIT_BRANCH: "ios-init"
+      groups:
+        - github_access  # <- Ce groupe doit contenir GITHUB_TOKEN
     scripts:
-      - name: Configure Git
+      - name: Clean existing ios/ folder
+        script: rm -rf ios
+      - name: Recreate Flutter iOS folder
+        script: flutter create .
+      - name: Commit new ios folder to Git
         script: |
-          git config --global user.name "Codemagic Bot"
-          git config --global user.email "codemagic@bot.com"
-          git remote set-url origin https://oauth2:${GITHUB_TOKEN}@github.com/Mykie58/flutter_ios_template.git
+          git config user.email "builder@codemagic.io"
+          git config user.name "Codemagic Bot"
+          git checkout -b $GIT_BRANCH || git checkout $GIT_BRANCH
+          git add ios
+          git commit -m "Recreate ios folder via Codemagic" || echo "Nothing to commit"
+          git push -u origin $GIT_BRANCH
 
-      - name: Remove existing ios folder (if any)
-        script: |
-          git rm -rf ios || echo "No ios dir tracked"
-          rm -rf ios
 
-      - name: Generate iOS folder
-        script: |
-          flutter create .
-
-      - name: Commit and push ios/
-        script: |
-          git add ios/
-          git commit -m "Regenerate ios folder via CI" || git commit --allow-empty -m "Force update to trigger push"
-          git push origin $GIT_BRANCH --verbose
 
